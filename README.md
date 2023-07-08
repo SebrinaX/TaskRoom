@@ -19,6 +19,7 @@ License
 This project is licensed under the MIT License.
 
 ## Developers 
+Sebrina Xian
 
 
 
