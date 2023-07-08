@@ -27,3 +27,4 @@ Caitlinyy
 [Gary Yao](https://github.com/GaryYa0)
 Sebrina Xian
 Jess Jiang
+Amy Song
