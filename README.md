@@ -23,7 +23,7 @@ License
 This project is licensed under the MIT License.
 
 ## Developers
-
 Caitlinyy
 [Gary Yao](https://github.com/GaryYa0)
 Sebrina Xian
+Jess Jiang
