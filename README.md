@@ -26,5 +26,6 @@ This project is licensed under the MIT License.
 Caitlinyy
 [Gary Yao](https://github.com/GaryYa0)
 Sebrina Xian
+Ryan Xu
 Jess Jiang
 Amy Song
