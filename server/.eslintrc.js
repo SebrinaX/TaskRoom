@@ -34,9 +34,6 @@ module.exports = {
       'error',
       'single'
     ],
-    'semi': [
-      'error',
-      'never'
-    ]
+    'no-console': 'off',
   }
 }
