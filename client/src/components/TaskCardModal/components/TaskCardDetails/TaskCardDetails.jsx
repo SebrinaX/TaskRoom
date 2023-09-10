@@ -3,12 +3,17 @@ import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
 import IconTitle from '../IconTitle'
 import FormatAlignLeftOutlinedIcon from '@mui/icons-material/FormatAlignLeftOutlined'
-import NakedTextField from '../../../NakedTextField'
 import ViewListOutlinedIcon from '@mui/icons-material/ViewListOutlined'
 import LensOutlinedIcon from '@mui/icons-material/LensOutlined'
 import TaskCardDetailSideBar from './components/TaskCardDetailSideBar/TaskCardDetailSideBar'
+import SaveTextEditor from '../../../SaveTextEditor'
 
 const TaskCardDetails = () => {
+  const [isEditingDescription, setIsEditingDescription] = React.useState(false)
+  const [description, setDescription] = React.useState('')
+  const [isEditingActivity, setIsEditingActivity] = React.useState(false)
+  const [activity, setActivity] = React.useState('')
+
   return (
     <Container style={{ padding: 0 }}>
       <Grid container spacing={2}>
@@ -18,16 +23,14 @@ const TaskCardDetails = () => {
               title="Description"
               icon={<FormatAlignLeftOutlinedIcon sx={{ fontSize: '20px' }} />}
             />
-            <NakedTextField
-              style={{
-                borderRadius: '5px',
-                marginLeft: '35px',
-                marginTop: '10px',
-                width: '93%',
-                height: '50px',
-                backgroundColor: '#091e420f',
-              }}
-            />
+            <SaveTextEditor
+              style={{ marginLeft: '35px' }}
+              isEditingContent={isEditingDescription}
+              setIsEditingContent={setIsEditingDescription}
+              content={description}
+              setContent={setDescription}>
+              Add a more detailed description...
+            </SaveTextEditor>
           </div>
           <div style={{ marginTop: '40px' }}>
             <IconTitle
@@ -38,12 +41,16 @@ const TaskCardDetails = () => {
               <IconTitle
                 icon={<LensOutlinedIcon sx={{ fontSize: '20px' }} />}
                 title={
-                  <NakedTextField fontSize={20} style={{ width: '100%' }} />
+                  <SaveTextEditor
+                    isEditingContent={isEditingActivity}
+                    setIsEditingContent={setIsEditingActivity}
+                    content={activity}
+                    setContent={setActivity}>
+                    Write a comment...
+                  </SaveTextEditor>
                 }
                 style={{
                   width: '550px',
-                  backgroundColor: 'white',
-                  borderRadius: '10px',
                 }}
               />
             </div>

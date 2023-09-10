@@ -1,59 +1,55 @@
-const mongoose = require('mongoose')
-
+const mongoose = require('mongoose');
 
 const taskSchema = new mongoose.Schema({
   parent_column: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Column',
-    required: true
+    required: true,
   },
   title: {
     type: String,
     required: true,
     trim: true,
-    minlength: 3,
-    maxlength: 30
+    minLength: 3,
+    maxLength: 30,
   },
   content: {
     type: String,
   },
   created_by: {
-    // should be ObjectID, but for testing purpose, we use String
-    type: String,
-    // type: mongoose.Schema.Types.ObjectId,
-    // ref: 'User',
-    required: true
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: false,
   },
   created_at: {
     type: Date,
-    default: Date.now()
+    default: Date.now(),
   },
   last_modified_at: {
     type: Date,
   },
   due_at: {
     type: Date,
-    default: () => new Date(+new Date() + 7 * 24 * 60 * 60 * 1000)
+    default: () => new Date(+new Date() + 7 * 24 * 60 * 60 * 1000),
   },
   assigned_to: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
+    ref: 'User',
   },
   comment: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Comment'
+    ref: 'Comment',
   },
-})
+});
 
-
-taskSchema.virtual('id').get(function () {
-  if (this._id) {
-    return this._id.toHexString()
-  }
-})
 taskSchema.set('toJSON', {
   virtuals: true,
-})
+  transform: (doc, ret) => {
+    ret.id = ret._id;
+    delete ret._id;
+    delete ret.__v;
+  },
+});
 
-const TaskModel = mongoose.model('Task', taskSchema)
-module.exports = TaskModel
+const TaskModel = mongoose.model('Task', taskSchema);
+module.exports = TaskModel;

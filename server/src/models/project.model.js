@@ -9,11 +9,11 @@ const projectSchema = new mongoose.Schema({
     maxlength: 30,
   },
   profile: {
+    default: 'This is a new project.',
     type: String,
-    required: true,
     trim: true,
     minlength: 3,
-    maxlength: 30,
+    maxlength: 200,
   },
   created_by: {
     type: mongoose.Schema.Types.ObjectId,

@@ -1,1 +1,2 @@
-export { default } from './Column'
+export { default as TaskColumn} from './Column'
+export { StyledColumnCard } from './Column'

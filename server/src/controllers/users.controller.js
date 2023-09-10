@@ -1,8 +1,7 @@
-const pino = require('pino');
 const NotFoundError = require('../errors/not.found');
 const UserModel = require('../models/user.model');
 
-const logger = pino(); // Create the logger instance
+const logger = require('../utils/logger'); // Create the logger instance
 
 const postUser = async (req, res, next) => {
   try {
@@ -45,8 +44,8 @@ const getUserById = async (req, res, next) => {
     // Log the user retrieval
     logger.info(`User ${id} retrieved successfully`);
   } catch (error) {
-    next(error);
-    logger.error(`Error while fetching user ${id}: ${error.message}`);
+    next();
+    // logger.error(`Error while fetching user ${id}: ${error.message}`);
   }
 };
 
@@ -54,15 +53,18 @@ const updateUser = async (req, res, next) => {
   const { id } = req.params;
   const { username, email, avatar_url } = req.body;
   try {
-    await UserModel.findByIdAndUpdate(
+    const user = await UserModel.findByIdAndUpdate(
       id,
       {
         username,
         email,
         avatar_url,
       },
-      { new: true },
+      { runValidators: true },
     ).exec();
+    if (!user) {
+      throw new NotFoundError(`UserId ${id} not found`);
+    }
     res.status(204).send();
 
     // Log successful update
@@ -89,10 +91,62 @@ const deleteUserById = async (req, res, next) => {
     logger.error(`Error while deleting user ${id}: ${error.message}`);
   }
 };
+
+const getUserProfile = async (req, res, next) => {
+  const user = req.user;
+  try {
+    res.json(user);
+    // Log successful retrieval
+    logger.info(`User ${user.id} retrieved successfully`);
+  } catch (error) {
+    next(error);
+    logger.error(`Error while fetching user ${user.id}: ${error.message}`);
+  }
+};
+
+const getProjectsForUser = async (req, res, next) => {
+  const userId = req.user.id;
+  try {
+    const { owned_projects } = await UserModel.findById(userId)
+      .populate('owned_projects')
+      .exec();
+    const { joined_projects } = await UserModel.findById(userId)
+      .populate('joined_projects')
+      .exec();
+    const projects = {};
+    const array = [...owned_projects, ...joined_projects];
+    array.forEach((project) => {
+      const { columns, created_by, created_at, members, name, profile } =
+        project;
+      projects[project.id] = {
+        columns,
+        created_by,
+        created_at,
+        members,
+        name,
+        profile,
+      };
+    });
+    res.json(projects);
+    // Log successful retrieval
+    logger.info(
+      `${
+        Object.keys(projects).length
+      }Projects for user ${userId} retrieved successfully`,
+    );
+  } catch (error) {
+    next(error);
+    logger.error(
+      `Error while fetching projects for user ${userId}: ${error.message}`,
+    );
+  }
+};
 module.exports = {
   postUser,
   getAllUsers,
   getUserById,
   updateUser,
   deleteUserById,
+  getUserProfile,
+  getProjectsForUser,
 };

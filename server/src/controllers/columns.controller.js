@@ -1,8 +1,9 @@
-const pino = require('pino');
 const ColumnModel = require('../models/column.model');
 const NotFoundError = require('../errors/not.found');
+const TaskModel = require('../models/task.model');
+const ProjectModel = require('../models/project.model');
 
-const logger = pino(); // Create the logger instance
+const logger = require('../utils/logger'); // Create the logger instance
 
 const createColumn = async (req, res, next) => {
   // get userId from req.body for testing purpose, should be req.user.id
@@ -14,13 +15,14 @@ const createColumn = async (req, res, next) => {
       parent_project,
       name,
     });
-
+    await ProjectModel.findByIdAndUpdate(parent_project, {
+      $push: { columns: column.id },
+    });
     await column.save();
-    res.status(201).json({ message: `${column.id} created successfully` });
+    res.status(200).json(column);
     // Log successful creation
     logger.info(`Column ${column.id} created successfully`);
   } catch (error) {
-    console.log(error);
     next(error);
   }
 };
@@ -40,9 +42,8 @@ const getColumnById = async (req, res, next) => {
 };
 
 const getAllColumns = async (req, res, next) => {
-  const { parent_project } = req.body;
   try {
-    const columns = await ColumnModel.find({ parent_project });
+    const columns = await ColumnModel.find();
     res.json(columns);
     logger.info(`Retrieved ${columns.length} columns`);
   } catch (error) {
@@ -52,13 +53,25 @@ const getAllColumns = async (req, res, next) => {
 
 const updateColumnById = async (req, res, next) => {
   const { id } = req.params;
-  const { name } = req.body;
+  const { name, tasks } = req.body;
   try {
-    const column = await ColumnModel.findByIdAndUpdate(id, {
-      name,
-    });
+    const column = await ColumnModel.findByIdAndUpdate(
+      id,
+      {
+        name,
+        tasks,
+      },
+      { runValidators: true },
+    );
     if (!column) {
       throw new NotFoundError(`ColumnId ${id} not found`);
+    }
+    if (tasks && column.tasks.length < tasks.length) {
+      const newTasks = tasks.filter((task) => !column.tasks.includes(task));
+      await TaskModel.updateMany(
+        { _id: { $in: newTasks } },
+        { parent_column: id },
+      );
     }
     res.status(204).send();
     logger.info(`Column ${id} updated successfully`);
@@ -74,6 +87,10 @@ const deleteColumnById = async (req, res, next) => {
     if (!column) {
       throw new NotFoundError(`ColumnId ${id} not found`);
     }
+    await ProjectModel.findByIdAndUpdate(column.parent_project, {
+      $pull: { columns: id },
+    });
+    await TaskModel.deleteMany({_id: { $in: column.tasks }});
     res.status(204).send();
     logger.info(`Column ${id} deleted successfully`);
   } catch (error) {

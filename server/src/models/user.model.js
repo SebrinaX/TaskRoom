@@ -23,6 +23,10 @@ const userSchema = new Schema({
       },
     ],
   },
+  email_verified: {
+    type: Boolean,
+    default: false,
+  },
   hashed_password: {
     type: String,
     required: true,
@@ -36,7 +40,7 @@ const userSchema = new Schema({
     type: String,
     // default:
   },
-  owned_project: [
+  owned_projects: [
     {
       type: Schema.Types.ObjectId,
       ref: 'Project',
@@ -48,13 +52,13 @@ const userSchema = new Schema({
       ref: 'Task',
     },
   ],
-  joined_project_id: [
+  joined_projects: [
     {
       type: Schema.Types.ObjectId,
       ref: 'Project',
     },
   ],
-  joined_task_id: [
+  joined_tasks: [
     {
       type: Schema.Types.ObjectId,
       ref: 'Task',
@@ -62,13 +66,13 @@ const userSchema = new Schema({
   ],
 });
 
-userSchema.virtual('id').get(function () {
-  if (this._id) {
-    return this._id.toHexString()
-  }
-})
 userSchema.set('toJSON', {
   virtuals: true,
+  transform: (doc, ret) => {
+    ret.id = ret._id
+    delete ret._id
+    delete ret.__v
+  }
 })
 
 const UserModel = model('User', userSchema);

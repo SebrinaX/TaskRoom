@@ -1,10 +1,12 @@
 import * as React from 'react'
 import Button from '@mui/material/Button'
 
-const SecondaryButton = ({ children }) => {
+const SecondaryButton = ({ children, onClick, style }) => {
   return (
     <>
       <Button
+        style={style}
+        onClick={onClick}
         variant="contained"
         sx={{
           backgroundColor: '#091e420f',

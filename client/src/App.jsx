@@ -1,16 +1,17 @@
 import React from 'react'
 import { BrowserRouter } from 'react-router-dom'
-// import Demo from './components/Demo'
-import AppRouter from './routes'
+import Router from './routes'
+import { Provider } from 'react-redux'
+import store from './store'
 
 function App() {
-	return (
-		<BrowserRouter>
-			{/* <h1>Task Room</h1>
-      <Demo /> */}
-			<AppRouter />
-		</BrowserRouter>
-	)
+  return (
+    <Provider store={store}>
+      <BrowserRouter>
+        <Router />
+      </BrowserRouter>
+    </Provider>
+  )
 }
 
-export default App;
+export default App

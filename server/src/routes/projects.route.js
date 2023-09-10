@@ -1,18 +1,22 @@
-const express = require('express')
+const express = require('express');
 const {
   postProject,
   getAllProjects,
   getProjectById,
   updateProject,
-  deleteProjectById
-} = require('../controllers/project.controller')
+  deleteProjectById,
+  getProjectDataById,
+} = require('../controllers/project.controller');
 
-const projectRouter = express.Router()
+const { authenticateJWT } = require('../middleware/auth.middleware');
 
-projectRouter.post('/',postProject)
-projectRouter.get('/',getAllProjects)
-projectRouter.get('/:id',getProjectById)
-projectRouter.patch('/:id',updateProject)
-projectRouter.delete('/:id',deleteProjectById)
+const projectRouter = express.Router();
 
-module.exports = projectRouter
+projectRouter.post('/', authenticateJWT, postProject);
+projectRouter.get('/', getAllProjects);
+projectRouter.get('/:id', getProjectById);
+projectRouter.patch('/:id', updateProject);
+projectRouter.delete('/:id', deleteProjectById);
+projectRouter.get('/data/:id', getProjectDataById);
+
+module.exports = projectRouter;

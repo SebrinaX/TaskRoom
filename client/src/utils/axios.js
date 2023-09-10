@@ -22,7 +22,7 @@ const backendHttpInstance = () => {
       error && console.log(error.response);
 
       // jwt expired or invalid
-      if (error && error.response && error.response.status === 401) {
+      if (error && error.response && error.response.status === 401 && error.response.data.message !== 'Email not verified') {
         localStorage.removeItem('token');
         return '';
       }
